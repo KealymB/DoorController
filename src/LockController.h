@@ -1,18 +1,20 @@
-#ifndef STEPPERCONTROLLER_H
-#define STEPPERCONTROLLER_H
+#ifndef LOCKCONTROLLER_H
+#define LOCKCONTROLLER_H
 
 #include <Stepper.h>
 
-class StepperController
+class LockController
 {
 public:
-    StepperController(int pin1, int pin2, int pin3, int pin4, int speed = 15, int stepsPerRevolution = 2048);
+    LockController();
+    void setup(int pin1, int pin2, int pin3, int pin4, int speed = 10, int stepsPerRevolution = 2048);
     void openLock();
     void closeLock();
     void setRange(int minimumRange, int maximumRange);
+    virtual ~LockController();
 
 private:
-    Stepper stepperMotor;
+    Stepper *stepperMotor;
     int motorPins[4];
     int stepsPerRevolution;
     int currentStepCount;

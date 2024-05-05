@@ -1,5 +1,4 @@
 #include "BleServer.h"
-#include <StepperController.h>
 
 class BleServer::ServerCallbacks : public NimBLEServerCallbacks
 {
@@ -38,42 +37,38 @@ class BleServer::CharacteristicCallbacks
     : public NimBLECharacteristicCallbacks
 {
 public:
-    CharacteristicCallbacks(std::function<void(const char *response)> onReadCallback,
-                            std::function<void(const char *response)> onWriteCallback)
-        : onReadCallback_(onReadCallback), onWriteCallback_(onWriteCallback) {}
+    CharacteristicCallbacks(void (*onWriteCallback)(const char *response),
+                            void (*onReadCallback)(const char *response))
+        : onWriteCallback_(onWriteCallback), onReadCallback_(onReadCallback) {}
 
     void onRead(NimBLECharacteristic *pCharacteristic)
     {
         Serial.print(pCharacteristic->getUUID().toString().c_str());
-        Serial.print(": onRead(), value: ");
         const std::string &characteristicValue = pCharacteristic->getValue();
 
         if (!characteristicValue.empty())
         {
             const char *response = characteristicValue.c_str();
-            Serial.println(response);
-            onWriteCallback_(response);
+            (*onReadCallback_)(response);
         }
     };
 
     void onWrite(NimBLECharacteristic *pCharacteristic)
     {
         Serial.print(pCharacteristic->getUUID().toString().c_str());
-        Serial.print(": onWrite(), value: ");
 
         const std::string &characteristicValue = pCharacteristic->getValue();
 
         if (!characteristicValue.empty())
         {
             const char *response = characteristicValue.c_str();
-            Serial.println(response);
-            onWriteCallback_(response);
+            (*onWriteCallback_)(response);
         }
     };
 
 private:
-    std::function<void(const char *response)> onReadCallback_;
-    std::function<void(const char *response)> onWriteCallback_;
+    void (*onReadCallback_)(const char *response);
+    void (*onWriteCallback_)(const char *response);
 };
 
 NimBLEServer *BleServer::pServer = nullptr;
@@ -82,10 +77,10 @@ BleServer::BleServer()
 {
 }
 
-void BleServer::setup(std::function<void(const char *response)> onReadCallback,
-                      std::function<void(const char *response)> onWriteCallback)
+void BleServer::setup(void (*onReadCallback)(const char *response),
+                      void (*onWriteCallback)(const char *response))
 {
-    static CharacteristicCallbacks chrCallbacks(onReadCallback, onWriteCallback);
+    static CharacteristicCallbacks chrCallbacks = CharacteristicCallbacks(onReadCallback, onWriteCallback);
 
     NimBLEDevice::init("JK House");
 

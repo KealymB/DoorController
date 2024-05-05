@@ -7,8 +7,8 @@ class BleServer
 {
 public:
     BleServer();
-    void setup(std::function<void(const char *response)> onReadCallback,
-               std::function<void(const char *response)> onWriteCallback);
+    void setup(void (*onReadCallback)(const char *response),
+               void (*onWriteCallback)(const char *response));
 
 private:
     static NimBLEServer *pServer;
