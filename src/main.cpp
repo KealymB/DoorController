@@ -38,4 +38,6 @@ void setup()
 
 void loop()
 {
+  lockController.update();
+  delay(1000);
 }

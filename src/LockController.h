@@ -10,6 +10,7 @@ public:
     void setup(int pin1, int pin2, int pin3, int pin4, int speed = 10, int stepsPerRevolution = 2048);
     void openLock();
     void closeLock();
+    void update();
     void setRange(int minimumRange, int maximumRange);
     virtual ~LockController();
 
@@ -20,6 +21,10 @@ private:
     int currentStepCount;
     int minimumRange;
     int maximumRange;
+    bool isMoving;
+    bool isLocked;
+    unsigned long moveStartTime;
+    unsigned long movementDuration = 10000;
     void moveTo(int position);
     void sleep();
 };

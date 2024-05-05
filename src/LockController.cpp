@@ -8,7 +8,6 @@ LockController::LockController()
 
 void LockController::setup(int pin1, int pin2, int pin3, int pin4, int speed, int stepsPerRevolution)
 {
-    Serial.begin(115200);
     Serial.println("Initialising stepper motor");
 
     stepperMotor = new Stepper(stepsPerRevolution, pin1, pin2, pin3, pin4);
@@ -24,14 +23,12 @@ void LockController::openLock()
 {
     Serial.println("opening");
     moveTo(maximumRange);
-    // sleep();
 }
 
 void LockController::closeLock()
 {
     Serial.println("closing");
     moveTo(minimumRange);
-    // sleep();
 }
 
 void LockController::moveTo(int position)
@@ -43,6 +40,9 @@ void LockController::moveTo(int position)
     {
         stepperMotor->step(numberOfStepsToMove);
         currentStepCount = position;
+
+        isMoving = true;
+        moveStartTime = millis();
     }
 }
 
@@ -54,9 +54,23 @@ void LockController::setRange(int minimumRange, int maximumRange)
 
 void LockController::sleep()
 {
+    Serial.println("Sleeping");
+
     for (int currentPinIndex = 0; currentPinIndex < sizeof(motorPins) / sizeof(motorPins[0]); currentPinIndex++)
     {
-        digitalWrite(currentPinIndex, LOW);
+        digitalWrite(motorPins[currentPinIndex], LOW);
+    }
+}
+
+void LockController::update()
+{
+    if (isMoving)
+    {
+        if (millis() - moveStartTime >= movementDuration)
+        {
+            sleep();
+            isMoving = false;
+        }
     }
 }
 
