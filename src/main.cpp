@@ -32,8 +32,6 @@ void setup()
   lockController.setup(16, 17, 18, 19);
   lockController.setRange(-200, 1020);
   bleServer.setup(&onServerWrite, &onServerRead);
-
-  Serial.println("Starting NimBLE Server");
 }
 
 void loop()

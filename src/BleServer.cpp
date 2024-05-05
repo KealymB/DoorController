@@ -5,7 +5,6 @@ class BleServer::ServerCallbacks : public NimBLEServerCallbacks
     void onConnect(NimBLEServer *pServer)
     {
         Serial.println("Client connected");
-        Serial.println("Multi-connect support: start advertising");
         NimBLEDevice::startAdvertising();
     };
 
@@ -43,7 +42,6 @@ public:
 
     void onRead(NimBLECharacteristic *pCharacteristic)
     {
-        Serial.print(pCharacteristic->getUUID().toString().c_str());
         const std::string &characteristicValue = pCharacteristic->getValue();
 
         if (!characteristicValue.empty())
@@ -55,8 +53,6 @@ public:
 
     void onWrite(NimBLECharacteristic *pCharacteristic)
     {
-        Serial.print(pCharacteristic->getUUID().toString().c_str());
-
         const std::string &characteristicValue = pCharacteristic->getValue();
 
         if (!characteristicValue.empty())
@@ -80,6 +76,8 @@ BleServer::BleServer()
 void BleServer::setup(void (*onReadCallback)(const char *response),
                       void (*onWriteCallback)(const char *response))
 {
+    Serial.println("Starting BLE Server");
+
     static CharacteristicCallbacks chrCallbacks = CharacteristicCallbacks(onReadCallback, onWriteCallback);
 
     NimBLEDevice::init("JK House");

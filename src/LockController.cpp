@@ -21,14 +21,16 @@ void LockController::setup(int pin1, int pin2, int pin3, int pin4, int speed, in
 }
 void LockController::openLock()
 {
-    Serial.println("opening");
+    Serial.println("Opening Lock");
     moveTo(maximumRange);
+    isLocked = false;
 }
 
 void LockController::closeLock()
 {
-    Serial.println("closing");
+    Serial.println("Closing Lock");
     moveTo(minimumRange);
+    isLocked = true;
 }
 
 void LockController::moveTo(int position)
@@ -63,6 +65,11 @@ void LockController::sleep()
 }
 
 void LockController::update()
+{
+    checkMovement();
+}
+
+void LockController::checkMovement()
 {
     if (isMoving)
     {

@@ -26,6 +26,7 @@ private:
     unsigned long moveStartTime;
     unsigned long movementDuration = 10000;
     void moveTo(int position);
+    void checkMovement();
     void sleep();
 };
 
